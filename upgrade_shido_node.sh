@@ -24,15 +24,31 @@ echo $DAEMON_NAME
 
 # Check if the OS is Ubuntu and the version is either 20.04 or 22.04
 if [ "$OS" == "Ubuntu" ] && [ "$VERSION" == "20.04" -o "$VERSION" == "22.04" ]; then
+
+# Check if the directory exists
+if [ -d "$HOMEDIR" ]; then
+    rm -rf "$HOMEDIR/cosmovisor/upgrades/"
+    echo "Directory removed."
+      # Copy and set executable permissions
+  current_path=$(pwd)
+  sudo chmod +x "$current_path/ubuntu${VERSION}build/$BINARY"
+  cosmovisor add-upgrade v2.0.0 "$current_path/ubuntu${VERSION}build/$BINARY"
+  sudo systemctl restart shidochain.service 
+else
   # Copy and set executable permissions
   current_path=$(pwd)
   sudo chmod +x "$current_path/ubuntu${VERSION}build/$BINARY"
   cosmovisor add-upgrade v2.0.0 "$current_path/ubuntu${VERSION}build/$BINARY"
+  echo "created."
+  sudo systemctl start shidochain.service 
+  fi
   
 else
   echo "Please check the OS version support; at this time, only Ubuntu 20.04 and 22.04 are supported."
   exit 1
 fi
+
+
 
 
 
